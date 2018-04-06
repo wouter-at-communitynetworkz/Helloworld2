@@ -11,6 +11,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 
 /**
@@ -31,18 +32,32 @@ public class HttpInteractor {
     private String path;
     private String method;
     private String myUrl;
+    private String port;
     //constructor
     public HttpInteractor()
     {
+        String value = System.getenv("LOGSTASH_HOST");
+        System.out.println(value);
+        Map<String, String> env = System.getenv();
+        for (String envName : env.keySet()) {
+            System.out.format("%s=%s%n",
+                    envName,
+                    env.get(envName));
+        }
+
         try
         {
-            protocol = "https";
-            domain = "napnop.net";
+//            protocol = "https";
+            protocol = "http";
+//            domain = "napnop.net";
+            domain = "192.168.43.111";
+            port = "9600";
             path = "";
             path = URLEncoder.encode(path, "UTF-8");
-            method = "PUT";
-
-            myUrl = protocol + "://" + domain + "/" + path;
+//            method = "PUT";
+            method ="PUT";
+//            myUrl = protocol + "://" + domain + "/" + path;
+            myUrl = protocol + "://" + domain + ":" + port;
             // if your url can contain weird characters you will want to
             // encode it here, something like this:
             //myUrl = URLEncoder.encode(myUrl, "UTF-8");
@@ -82,13 +97,16 @@ public class HttpInteractor {
         URL url = null;
         BufferedReader reader = null;
         StringBuilder stringBuilder;
-
+        String lgsth = "";//get environment variables LOGSTASH_HOST LOGSTASH_HTTP_PORT  LOGSTASH_BEATS_PORT LOGSTASH_MONITOR_PORT LOGSTASH_HTTP_SCHEME
+//      LOGSTASH_HOST 192.168.43.111
         try
         {
             // create the HttpURLConnection
             url = new URL(desiredUrl);
+
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
+//                 connection.setRequestProperty();
             // just want to do an HTTP GET here
 //            connection.setRequestMethod("GET");
 //            connection.setRequestMethod("PUT");
@@ -101,7 +119,7 @@ public class HttpInteractor {
             map.put("user", "system");
             map.put("caller", "this_file");
             map.put("caller-line", "this_line");
-            map.put("node-nam", "this_nod");
+            map.put("node-name", "this_nod");
             map.put("lgsthenv","lgsth");
             map.put("message","logitem");
 
@@ -115,19 +133,20 @@ public class HttpInteractor {
             // uncomment this if you want to write output to this url
             connection.setDoOutput(true);
 
-            connection.setDoOutput( true );
+//            connection.setDoOutput( true );
             connection.setInstanceFollowRedirects( false );
-            connection.setRequestMethod( "POST" );
+//            connection.setRequestMethod( "POST" );
+            connection.setRequestMethod( "GET" );
 
-            connection.setRequestProperty( "Content-Type", "application/json");
+//            connection.setRequestProperty( "Content-Type", "application/json");
 
-            connection.setRequestProperty( "Accept", "application/json");
-            connection.setRequestProperty( "charset", "utf-8");
+//            connection.setRequestProperty( "Accept", "application/json");
+//            connection.setRequestProperty( "charset", "utf-8");
 
             connection.setUseCaches( false );
-            try( DataOutputStream wr = new DataOutputStream( connection.getOutputStream())) {
-                wr.write( postData );
-            }
+//            try( DataOutputStream wr = new DataOutputStream( connection.getOutputStream())) {
+//                wr.write( postData );
+//            }
 
 
 
